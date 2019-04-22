@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>layout 后台大布局 - Layui</title>
+    <link rel="stylesheet" href="/web/layui/css/layui.css">
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo">layui 后台布局</div>
+        <!-- 头部区域（可配合layui已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item"><a href="">控制台</a></li>
+            <li class="layui-nav-item"><a href="">商品管理</a></li>
+            <li class="layui-nav-item"><a href="">用户</a></li>
+            <li class="layui-nav-item">
+                <a href="javascript:;">其它系统</a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">邮件管理</a></dd>
+                    <dd><a href="">消息管理</a></dd>
+                    <dd><a href="">授权管理</a></dd>
+                </dl>
+            </li>
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="layui-nav-item">
+                <a href="javascript:;">
+                    <img src="http://t.cn/RCzsdCq" class="layui-nav-img">
+                    贤心
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">基本资料</a></dd>
+                    <dd><a href="">安全设置</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="">退了</a></li>
+        </ul>
+    </div>
+
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">所有商品</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;">列表一</a></dd>
+                        <dd><a href="javascript:;">列表二</a></dd>
+                        <dd><a href="javascript:;">列表三</a></dd>
+                        <dd><a href="">超链接</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item">
+                    <a href="javascript:;">解决方案</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;">列表一</a></dd>
+                        <dd><a href="javascript:;">列表二</a></dd>
+                        <dd><a href="">超链接</a></dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item"><a href="">云市场</a></li>
+                <li class="layui-nav-item"><a href="">发布商品</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <br>
+
+        <!-- 内容主体区域 -->
+        <div class="layui-form">
+            <div class="layui-form-item">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-inline">
+                    <input name="name" id="name" class="layui-input" placeholder="请输入姓名">
+                </div>
+
+                <button type="button" class="layui-btn" lay-submit lay-filter="demo-list">查 询</button>
+                <button type="button" class="layui-btn layui-btn-primary" id="btn-add">新 增</button>
+            </div>
+        </div>
+
+        <!--表格-->
+        <table id="demo-list" lay-filter="demo-list"></table>
+
+        <script type="text/html" id="demo-list-toolbar">
+            <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="view">查看</a>
+            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="del">删除</a>
+        </script>
+    </div>
+
+    <div class="layui-footer">
+        <!-- 底部固定区域 -->
+        © layui.com - 底部固定区域
+    </div>
+</div>
+<script src="/web/layui/layui.all.js"></script>
+<script>
+    //JavaScript代码区域
+    var element = layui.element;
+    var table = layui.table;
+    var form = layui.form;
+    var $ = layui.$;
+
+    // 查询
+    form.on('submit(demo-list)', function (e) {
+        table.reload('demo-list', {
+            where: e.field
+        })
+    });
+
+    $('#btn-add').click(function () {
+        $.get('/web/add.html?t=' + new Date().getTime()).done(function (html) {
+            layer.open({
+                title: '新增demo',
+                type: 1,
+                skin: 'layui-layer-dialog',
+                anim: -1,
+                isOutAnim: false,
+                shadeClose: false,
+                scrollbar: false,
+                btnAlign: 'c',
+                content: html,
+                btn: ['保 存', '取 消'],
+                btn1: function (index, elem) {
+                    // 触发校验
+                    elem.find('*[lay-submit]').trigger('click');
+                },
+                success: function (elem, index) {
+                    // 渲染
+                    form.render();
+
+                    // 表单提交
+                    form.on('submit(demo-save)', function (data) {
+                        $.post('/add', data.field).done(function () {
+                            layer.msg('保存成功');
+                            layer.close(index);
+
+                            // 刷新列表
+                            table.reload('demo-list');
+                        });
+
+                        return false;
+                    })
+                }
+            })
+        })
+
+    });
+
+    //第一个实例
+    table.render({
+        elem: '#demo-list'
+        , height: 'full-210'
+        , url: '/list' //数据接口
+        , page: true //开启分页
+        , method: 'POST'
+        , request: {
+            pageName: 'pageNum' //页码的参数名称，默认：page
+            , limitName: 'pageSize' //每页数据量的参数名，默认：limit
+        }
+        , limit: 10
+        , cols: [[ //表头
+            {field: 'id', title: 'ID', width: 300}
+            , {field: 'name', title: '姓名', width: 120}
+            , {field: 'age', title: '年龄', width: 80}
+            , {title: '操作', toolbar: '#demo-list-toolbar'}
+        ]]
+    });
+</script>
+</body>
+</html>

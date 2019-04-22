@@ -1,0 +1,5 @@
+GET http://localhost:8080/mybatis/list
+Accept: application/json
+
+###
+

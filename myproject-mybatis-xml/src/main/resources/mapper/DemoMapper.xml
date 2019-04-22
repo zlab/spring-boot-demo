@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jianyun.mapper.DemoMapper">
+
+    <select id="queryForList" resultType="TestTable">
+        select * from a_test_table
+    </select>
+
+    <select id="add">
+        insert into a_test_table (id, name, age) values (#{id}, #{name}, #{age})
+    </select>
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jianyun.mapper.DemoXmlMapper">
+
+    <select id="queryForList" resultType="Map">
+        SELECT *
+        FROM A_TEST_TABLE
+    </select>
+
+    <select id="queryForPage" resultType="Map">
+        <![CDATA[
+        SELECT *
+        FROM (SELECT t.*
+              FROM A_TEST_TABLE t)
+        WHERE ROWNUM <= 501
+        ]]>
+    </select>
+</mapper>
